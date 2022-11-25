@@ -1,0 +1,38 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: "{{ .Values.config.name }}-ingress-cm"
+  namespace: {{ .Values.config.namespace }}
+data:
+  SCRIPT_FILENAME: "/var/www/html/public$fastcgi_script_name"
+  root: /var/www/html/public
+---
+
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: "{{ .Values.config.name }}-ingress"
+  namespace: {{ .Values.config.namespace }}
+  labels:
+    app: {{ .Values.config.name }}
+    chart: {{ .Chart.Name }}-{{ .Chart.Version }}
+    release: {{ .Release.Name }}
+  annotations:
+    kubernetes.io/ingress.allow-http: "true"
+    nginx.ingress.kubernetes.io/backend-protocol: "FCGI"
+    nginx.ingress.kubernetes.io/fastcgi-index: "index.php"
+    nginx.ingress.kubernetes.io/fastcgi-params-configmap: {{ .Values.config.name }}-ingress-cm
+
+spec:
+  ingressClassName: {{ .Values.config.ingress.ingressClass }}
+  rules:
+  - host: {{ .Values.config.ingress.host.url }}
+    http:
+      paths:
+      - path: {{ .Values.config.ingress.host.path }}
+        pathType: {{ .Values.config.ingress.host.pathType }}
+        backend:
+          service:
+            name: "{{ .Values.config.name }}-service"
+            port:
+              number: {{ .Values.config.ports.targetPort }}

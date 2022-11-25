@@ -1,0 +1,9 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: "{{ .Values.config.name }}-configmap"
+  namespace: {{ .Values.config.namespace }}
+data:
+# This should be secrets / env variables that we do not want to protect via encoding
+    CACHE_DRIVER: "file"
+    FILESYSTEM_DISK: "local"
