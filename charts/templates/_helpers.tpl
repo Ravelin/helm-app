@@ -48,14 +48,15 @@ Annotations for ingresses
 */}}
 {{- define "common.ingress.annotations" -}}
 {{- if .Values.local -}}
-{{- range $key, $value := .Values.localIngress.annotations -}}
-{{ $key }} : {{ $value | quote }}
-{{- end }}
+kubernetes.io/ingress.allow-http: "true"
+nginx.ingress.kubernetes.io/backend-protocol: "FCGI"
+nginx.ingress.kubernetes.io/fastcgi-index: "index.php"
 nginx.ingress.kubernetes.io/fastcgi-params-configmap: {{ include "common.fullname" . }}-ingress-configmap
 {{- else }}
-{{- range $key, $value := .Values.awsIngress.annotations -}}
-{{ $key }}: {{ $value | quote }}
-{{- end }}
+kubernetes.io/ingress.class: alb
+alb.ingress.kubernetes.io/backend-protocol: HTTPS
+alb.ingress.kubernetes.io/listen-ports: '[{"HTTP":80}, {"HTTPS":443}]'
+alb.ingress.kubernetes.io/scheme: internet-facing
 {{- end }}
 
 {{- end }}
