@@ -10,12 +10,12 @@ project: CTI
 name: Backend
 
 # Project Environment
-env: qa
+env: production
 
 # Image Details.
 image:
     repository: ghcr.io/ravelin/laravel-docker
-    pullPolicy: Always
+    pullPolicy: IfNotPresent
     # Overrides the image tag whose default is the chart appVersion.
     tag: sha-02f9471
 
@@ -36,7 +36,7 @@ ingress:
     host:
         path: /
         pathType: Prefix
-        hostname: qa.test
+        name: prd.test
     type: LoadBalancer
 
 
@@ -57,3 +57,6 @@ awsIngress:
 
 autoscaling:
     enabled: false
+    minReplicas: 2
+    maxReplicas: 4
+    targetMemoryUtilizationPercentage: 50

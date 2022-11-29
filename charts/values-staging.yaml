@@ -2,42 +2,58 @@
 # This is a YAML-formatted file.
 # Declare variables to be passed into your templates.
 
-replicaCount: 1
+# Development Environment.
+local: true
+
+# Project Details.
+project: CTI
+name: Backend
+
+# Project Environment
+env: staging
+
+# Image Details.
 image:
-    repository: ghcr.io/ravelin/laravel-docker:sha-02f9471
+    repository: ghcr.io/ravelin/laravel-docker
     pullPolicy: Always
     # Overrides the image tag whose default is the chart appVersion.
-    tag: ""
+    tag: sha-02f9471
 
+# AWS Details.
 aws:
     region: eu-west-2
 
 config:
-    environment: staging
-    name: cti-backend-staging
-    namespace: cti-staging
-    ingress:
-        host:
-            path: /
-            pathType: Prefix
-            url: staging.test
-        type: LoadBalancer
-        env: staging
-        annotations:
-            kubernetes.io/ingress.class: alb
-            alb.ingress.kubernetes.io/backend-protocol: HTTPS
-            alb.ingress.kubernetes.io/listen-ports: '[{"HTTP":80}, {"HTTPS":443}]'
-            alb.ingress.kubernetes.io/scheme: internet-facing
-        ingressClass: nginx
     ports:
         port: 80
         targetPort: 9000
     phpService:
         type: NodePort
         targetPort: 9000
+    replicaCount: 2
+
+ingress:
+    host:
+        path: /
+        pathType: Prefix
+        hostname: staging.test
+    type: LoadBalancer
+
+
+localIngress:
+    ingressClass: nginx
+    annotations:
+        kubernetes.io/ingress.allow-http: "true"
+        nginx.ingress.kubernetes.io/backend-protocol: "FCGI"
+        nginx.ingress.kubernetes.io/fastcgi-index: "index.php"
+
+awsIngress:
+    ingressClass: alb
+    annotations:
+        kubernetes.io/ingress.class: alb
+        alb.ingress.kubernetes.io/backend-protocol: HTTPS
+        alb.ingress.kubernetes.io/listen-ports: '[{"HTTP":80}, {"HTTPS":443}]'
+        alb.ingress.kubernetes.io/scheme: internet-facing
 
 autoscaling:
-    enabled: true
-    minReplicas: 2
-    maxReplicas: 4
-    targetMemoryUtilizationPercentage: 50
+    enabled: false

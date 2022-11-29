@@ -1,31 +1,30 @@
-{{- if .Values.autoscaling.enabled }}
+{{- if .Values.autoscaling.enabled -}}
 apiVersion: autoscaling/v2
 kind: HorizontalPodAutoscaler
 metadata:
-  name: "{{ .Values.config.name }}-hpa"
-  namespace: {{ .Values.config.namespace }}
+  name: {{ include "common.fullname" . }}-scaling
+  namespace: {{ include "common.namespace" . }}
 spec:
   scaleTargetRef:
     apiVersion: apps/v1
     kind: Deployment
-    name: {{.Values.config.name}}-deployment
+    name: {{ include "common.fullname" . }}-deployment
   minReplicas: {{ .Values.autoscaling.minReplicas }}
   maxReplicas: {{ .Values.autoscaling.maxReplicas }}
   metrics:
-    {{- if .Values.autoscaling.targetCPUUtilizationPercentage }}
+    {{- if .Values.autoscaling.targetCPUUtilizationPercentage -}}
     - type: Resource
       resource:
         name: cpu
         target:
           type: Utilization
           averageUtilization: {{ .Values.autoscaling.targetCPUUtilizationPercentage }}
-    {{- end }}
-    {{- if .Values.autoscaling.targetMemoryUtilizationPercentage }}
-    - type: Resource
+    {{- end -}}
+    {{- if .Values.autoscaling.targetMemoryUtilizationPercentage -}}
       resource:
         name: memory
         target:
           type: Utilization
           averageUtilization: {{ .Values.autoscaling.targetMemoryUtilizationPercentage }}
-    {{- end }}
-{{- end }}
+    {{- end -}}
+{{- end -}}

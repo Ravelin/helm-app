@@ -1,28 +1,23 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: "{{.Values.config.name}}-deployment"
-  labels:
-    app: {{ .Values.config.name }}
-    # release: {{ .Release.Name }}
-    # chart: {{ .Chart.Name }}
-  namespace: {{ .Values.config.namespace }}
+  name: {{ include "common.fullname" . }}-deployment
+  namespace: {{ include "common.namespace" . }}
+  labels: {{ include "common.labels" . | nindent 4 }}
 spec:
-  replicas: {{ .Values.replicaCount }}
+  replicas: {{ .Values.config.replicaCount | default 1 }}
   selector:
     matchLabels:
-      app: {{.Values.config.name}}
-      # release: {{ .Release.Name }}
-      # chart: {{ .Chart.Name }}
+      {{ include "common.selectorLabels" . | nindent 8 }}
   template:
     metadata:
       labels:
-        app: {{.Values.config.name}}
-        release: {{ .Release.Name }}
+        name: {{ include "common.fullname" . }}-deployment
+        {{ include "common.labels" . | nindent 8 }}
     spec:
       containers:
-      - name:  {{.Values.config.name}}
-        image: {{ .Values.image.repository }}
+      - name: {{ .Chart.Name}}
+        image: {{ .Values.image.repository }}:{{ .Values.image.tag }}
         imagePullPolicy: {{ .Values.image.pullPolicy }}
         ports:
           - name: http-phpfpm
@@ -30,10 +25,6 @@ spec:
             protocol: TCP
         envFrom:
           - secretRef:
-              name: "{{ .Values.config.name }}-env"
+              name: {{ include "common.fullname" . }}-env
           - configMapRef:
-              name: "{{ .Values.config.name }}-configmap"
-        lifecycle:
-            postStart:
-              exec:
-                command: ["/bin/sh", "-c", {{cmd}}]
+              name: {{ include "common.fullname" . }}-configmap

@@ -1,38 +1,31 @@
 apiVersion: v1
 kind: ConfigMap
 metadata:
-  name: "{{ .Values.config.name }}-ingress-cm"
-  namespace: {{ .Values.config.namespace }}
+  name: {{ include "common.fullname" . }}-ingress-configmap
+  namespace: {{ include "common.namespace" . }}
+  labels: {{ include "common.labels" . | nindent 4 }}
 data:
   SCRIPT_FILENAME: "/var/www/html/public$fastcgi_script_name"
   root: /var/www/html/public
+
 ---
 
 apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
-  name: "{{ .Values.config.name }}-ingress"
-  namespace: {{ .Values.config.namespace }}
+  name: {{ include "common.fullname" . }}-ingress
+  namespace: {{ include "common.namespace" . }}
   labels:
-    app: {{ .Values.config.name }}
-    chart: {{ .Chart.Name }}-{{ .Chart.Version }}
-    release: {{ .Release.Name }}
-  annotations:
-    kubernetes.io/ingress.allow-http: "true"
-    nginx.ingress.kubernetes.io/backend-protocol: "FCGI"
-    nginx.ingress.kubernetes.io/fastcgi-index: "index.php"
-    nginx.ingress.kubernetes.io/fastcgi-params-configmap: {{ .Values.config.name }}-ingress-cm
-
+    {{ include "common.labels" . | nindent 4 }}
 spec:
-  ingressClassName: {{ .Values.config.ingress.ingressClass }}
   rules:
-  - host: {{ .Values.config.ingress.host.url }}
+  - host: {{ .Values.ingress.host.name }}
     http:
       paths:
-      - path: {{ .Values.config.ingress.host.path }}
-        pathType: {{ .Values.config.ingress.host.pathType }}
+      - path: {{ .Values.ingress.host.path }}
+        pathType: {{ .Values.ingress.host.pathType }}
         backend:
           service:
-            name: "{{ .Values.config.name }}-service"
+            name: {{ include "common.fullname" . }}-service
             port:
               number: {{ .Values.config.ports.targetPort }}
