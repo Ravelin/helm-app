@@ -9,6 +9,11 @@ spec:
   selector:
     matchLabels:
       {{ include "common.selectorLabels" . | nindent 8 }}
+  strategy:
+    type: {{ .Values.config.strategy.type }}
+    rollingUpdate:
+        maxSurge: {{ .Values.config.strategy.maxSurge | default 2 }}
+        maxUnavailable: {{ .Values.config.strategy.maxUnavailable }}
   template:
     metadata:
       labels:

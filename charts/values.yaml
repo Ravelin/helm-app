@@ -31,6 +31,10 @@ config:
         type: NodePort
         targetPort: 9000
     replicaCount: 2
+    strategy:
+        type: RollingUpdate
+        maxSurge: 2
+        maxUnavailable: 2
 
 ingress:
     host:
@@ -56,7 +60,8 @@ awsIngress:
         alb.ingress.kubernetes.io/scheme: internet-facing
 
 autoscaling:
-    enabled: false
-    minReplicas: 2
-    maxReplicas: 4
-    targetMemoryUtilizationPercentage: 50
+    enabled: true
+    minReplicas: 4
+    maxReplicas: 12
+    targetMemory: 50
+    #targetCPU: 80

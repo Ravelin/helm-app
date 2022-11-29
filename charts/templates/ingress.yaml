@@ -17,7 +17,13 @@ metadata:
   namespace: {{ include "common.namespace" . }}
   labels:
     {{ include "common.labels" . | nindent 4 }}
+  annotations:
+    kubernetes.io/ingress.allow-http: "true"
+    nginx.ingress.kubernetes.io/backend-protocol: "FCGI"
+    nginx.ingress.kubernetes.io/fastcgi-index: "index.php"
+    nginx.ingress.kubernetes.io/fastcgi-params-configmap: {{ include "common.fullname" . }}-ingress-configmap
 spec:
+  ingressClassName: {{ .Values.localIngress.ingressClass}}
   rules:
   - host: {{ .Values.ingress.host.name }}
     http:
