@@ -30,7 +30,7 @@ config:
     phpService:
         type: NodePort
         targetPort: 9000
-    replicaCount: 2
+    replicaCount: 4
     strategy:
         type: RollingUpdate
         maxSurge: 2
@@ -61,7 +61,7 @@ awsIngress:
 
 autoscaling:
     enabled: true
-    minReplicas: 4
-    maxReplicas: 12
+    minReplicas: 2
+    maxReplicas: 16
     targetMemory: 50
     #targetCPU: 80
