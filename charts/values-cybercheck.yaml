@@ -1,0 +1,12 @@
+name: cybercheck-frontend-api
+ingress:
+  host:
+    name: api.cybercheck.test
+
+config:
+  replicaCount: 2
+
+autoscaling:
+  enabled: true
+  minReplicas: 1
+  maxReplicas: 5
