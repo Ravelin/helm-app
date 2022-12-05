@@ -1,7 +1,7 @@
-name: cybercheck-frontend-api
+name: cyber-frontend-api
 ingress:
   host:
-    name: api.cybercheck.test
+    name: api.cyber.test
 
 config:
   replicaCount: 2
