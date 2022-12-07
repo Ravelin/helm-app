@@ -33,3 +33,18 @@ spec:
               name: {{ include "common.fullname" . }}-env
           - configMapRef:
               name: {{ include "common.fullname" . }}-configmap
+      - name: php-fpm-exporter
+        image: "ghcr.io/hipages/php-fpm_exporter:latest"
+        ports:
+        - containerPort: 9253
+        env:
+        - name: PHP_FPM_WEB_LISTEN_ADDRESS
+          value: :9253
+        - name: PHP_FPM_WEB_TELEMETRY_PATH
+          value: /metrics
+        - name: PHP_FPM_SCRAPE_URI
+          value: tcp://127.0.0.1/status
+        - name: PHP_FPM_FIX_PROCESS_COUNT
+          value: "false"
+        - name: PHP_FPM_LOG_LEVEL
+          value: info
