@@ -1,11 +1,11 @@
 project: cti # Project Name
-name:  # This is the name of the chart, not the name of the project.
+name: example # This is the name of the chart, not the name of the project.
 environment: production # ENV type
 
 image:
-  repository:   # The Image to use for the container
+  repository: # The Image to use for the container
   pullPolicy: IfNotPresent # The pull policy for the image (Always, IfNotPresent, Never)
-  tag:  # Overrides the image tag whose default is the chart appVersion.
+  tag: # Overrides the image tag whose default is the chart appVersion.
 
 replicas: 1 # Number of replicas to run
 
