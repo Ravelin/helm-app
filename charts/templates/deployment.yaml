@@ -23,7 +23,7 @@ spec:
         {{ include "common.labels" . | nindent 8 }}
     spec:
       containers:
-      - name: {{ .Chart.Name}}
+      - name: {{ .Values.name | lower }}-container
         image: {{ .Values.image.repository }}:{{ .Values.image.tag }}
         imagePullPolicy: {{ .Values.image.pullPolicy }}
         ports:
