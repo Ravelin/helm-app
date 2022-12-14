@@ -30,7 +30,7 @@ app.kubernetes.io/release-version: {{ .Chart.Version }}
 {{- end }}
 app.kubernetes.io/name: {{ include "common.fullname" . }} # Required
 app.kubernetes.io/instance: {{ .Release.Name }} # Required
-app.kubernetes.io/hostname: {{ .Values.ingress.name | lower }}
+app.kubernetes.io/hostname: {{ .Values.ingress.host | lower }}
 app.kubernetes.io/component: {{ .Values.environment }}
 app.kubernetes.io/part-of: {{ .Values.project }}
 app.kubernetes.io/managed-by: {{ .Release.Service }} # Required
