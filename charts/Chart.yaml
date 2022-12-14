@@ -2,9 +2,6 @@ apiVersion: v2
 name: cyjax-backend
 description: A Helm chart for Kubernetes
 
-# Icon Recommended 
-icon: https://www.cyjax.com/app/uploads/2019/08/cyjax-logo.svg
-
 # A chart can be either an 'application' or a 'library' chart.
 #
 # Application charts are a collection of templates that can be packaged into versioned archives
