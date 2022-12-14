@@ -24,7 +24,7 @@ strategy: # https://kubernetes.io/docs/concepts/workloads/controllers/deployment
 ingress: # https://kubernetes.io/docs/concepts/services-networking/ingress/
   path: / # This is the path that the ingress will listen on.
   pathType: Prefix # Prefix | ImplementationSpecific
-  name: frontend-api.test
+  host: frontend-api.test
   type: LoadBalancer # NodePort
   class: nginx # alb
 
