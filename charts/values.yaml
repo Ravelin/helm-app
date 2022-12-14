@@ -32,8 +32,8 @@ ingress: # https://kubernetes.io/docs/concepts/services-networking/ingress/
 
 autoscaling: # https://kubernetes.io/docs/tasks/run-application/horizontal-pod-autoscale/
     enabled: true # Enable autoscaling
-    minReplicas: 2 # Minimum number of replicas
-    maxReplicas: 6 # Maximum number of replicas
+    minReplicas: 1 # Minimum number of replicas
+    maxReplicas: 2 # Maximum number of replicas
     targetMemory: 50 # Target memory usage in percentage
     #targetCPU: 80 # Target CPU usage in percentage
 
