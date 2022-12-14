@@ -3,11 +3,13 @@ kind: Service
 metadata:
   name: {{ include "common.fullname" . }}-service
   namespace: {{ include "common.namespace" . }}
-  labels: {{ include "common.labels" . | nindent 4 }}
+  labels:
+    release: {{ .Release.Name }}
+{{ include "common.labels" . | nindent 4 }}
 spec:
   ports:
     - protocol: TCP
-      port: {{ .Values.config.ports.targetPort }}
-      targetPort: {{ .Values.config.ports.targetPort }}
+      port: {{ .Values.service.targetPort }}
+      targetPort: {{ .Values.service.targetPort }}
       name: fastcgi
   selector: {{ include "common.selectorLabels" . | nindent 4 }}

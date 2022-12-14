@@ -1,67 +1,61 @@
-# Default values for helm chart.
-# This is a YAML-formatted file.
-# Declare variables to be passed into your templates.
+project: cti # Project Name
+name:  # This is the name of the chart, not the name of the project.
+environment: production # ENV type
 
-# Development Environment.
-local: true
+image: 
+  repository:   # The Image to use for the container
+  pullPolicy: IfNotPresent # The pull policy for the image (Always, IfNotPresent, Never)
+  tag:  # Overrides the image tag whose default is the chart appVersion.
 
-# Project Details.
-project: CTI
-name: Backend
+replicas: 1 # Number of replicas to run
 
-# Project Environment
-env: production
+service: # https://kubernetes.io/docs/concepts/services-networking/service/
+  port: 80 # The port the service will connect on
+  targetPort: 9000 # Port exposed in the container
+  type: NodePort # Service type
+  name: php-fpm-service # Service name
+  protocol: TCP # Service protocol
 
-# Image Details.
-image:
-    repository: ghcr.io/ravelin/laravel-docker
+strategy: # https://kubernetes.io/docs/concepts/workloads/controllers/deployment/#strategy
+  type: RollingUpdate # RollingUpdate, Recreate
+  maxSurge: 2 # Number of Nodes to change at once
+  maxUnavailable: 2 # Number of Nodes that can be unavailable at once
+
+ingress: # https://kubernetes.io/docs/concepts/services-networking/ingress/
+  path: / # This is the path that the ingress will listen on.
+  pathType: Prefix # Prefix | ImplementationSpecific
+  name: frontend-api.test
+  type: LoadBalancer # NodePort
+  class: nginx # alb
+
+# TODO:  Ingress Annotations
+
+autoscaling: # https://kubernetes.io/docs/tasks/run-application/horizontal-pod-autoscale/
+    enabled: true # Enable autoscaling
+    minReplicas: 2 # Minimum number of replicas
+    maxReplicas: 6 # Maximum number of replicas
+    targetMemory: 50 # Target memory usage in percentage
+    #targetCPU: 80 # Target CPU usage in percentage
+
+aws: # AWS specific values
+  region: eu-west-2 # AWS region
+
+secrets: # Secrets to be used in the deployment
+  name:  # Name of the secret
+  decodingStrategy: Auto # Auto, Base64, Hex, None
+
+externalSecrets: # External Secrets to be used in the deployment
+  accountId: # AWS Account ID
+  roleName:  # AWS Role Name
+  refreshInterval: 1m # Refresh interval for the secret ("ns", "us" (or "µs"), "ms", "s", "m", "h")
+  enabled: true # Dependencies Enabled
+
+# PHP-FPM Exporter
+exporter:
+  name: php-fpm-exporter
+  image:
+    repository: ghcr.io/hipages/php-fpm_exporter:latest
     pullPolicy: IfNotPresent
-    # Overrides the image tag whose default is the chart appVersion.
-    tag: sha-02f9471
-
-# AWS Details.
-aws:
-    region: eu-west-2
-
-config:
-    ports:
-        port: 80
-        targetPort: 9000
-    phpService:
-        type: NodePort
-        targetPort: 9000
-    replicaCount: 4
-    strategy:
-        type: RollingUpdate
-        maxSurge: 2
-        maxUnavailable: 2
-
-ingress:
-    host:
-        path: /
-        pathType: Prefix
-        name: prd.test
-    type: LoadBalancer
-
-
-localIngress:
-    ingressClass: nginx
-    annotations:
-        kubernetes.io/ingress.allow-http: "true"
-        nginx.ingress.kubernetes.io/backend-protocol: "FCGI"
-        nginx.ingress.kubernetes.io/fastcgi-index: "index.php"
-
-awsIngress:
-    ingressClass: alb
-    annotations:
-        kubernetes.io/ingress.class: alb
-        alb.ingress.kubernetes.io/backend-protocol: HTTPS
-        alb.ingress.kubernetes.io/listen-ports: '[{"HTTP":80}, {"HTTPS":443}]'
-        alb.ingress.kubernetes.io/scheme: internet-facing
-
-autoscaling:
-    enabled: true
-    minReplicas: 2
-    maxReplicas: 16
-    targetMemory: 50
-    #targetCPU: 80
+  ports:
+    name: metrics
+    containerPort: 9253

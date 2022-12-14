@@ -4,7 +4,8 @@ metadata:
   name: {{ include "common.fullname" . }}-configmap
   namespace: {{ include "common.namespace" . }}
   labels:
-    {{ include "common.labels" . | nindent 4 }}
+    release: {{ .Release.Name }}
+{{ include "common.labels" . | nindent 4 }}
 data:
   # This should be secrets / env variables that we do not want to protect via encoding
   CACHE_DRIVER: "file"

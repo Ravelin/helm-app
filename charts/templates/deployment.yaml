@@ -3,17 +3,19 @@ kind: Deployment
 metadata:
   name: {{ include "common.fullname" . }}-deployment
   namespace: {{ include "common.namespace" . }}
-  labels: {{ include "common.labels" . | nindent 4 }}
+  labels:
+    release: {{ .Release.Name }}
+{{ include "common.labels" . | nindent 4 }}
 spec:
-  replicas: {{ .Values.config.replicaCount | default 1 }}
+  replicas: {{ .Values.replicas | default 1 }}
   selector:
     matchLabels:
       {{ include "common.selectorLabels" . | nindent 8 }}
   strategy:
-    type: {{ .Values.config.strategy.type }}
+    type: {{ .Values.strategy.type }}
     rollingUpdate:
-        maxSurge: {{ .Values.config.strategy.maxSurge | default 2 }}
-        maxUnavailable: {{ .Values.config.strategy.maxUnavailable }}
+        maxSurge: {{ .Values.strategy.maxSurge | default 2 }}
+        maxUnavailable: {{ .Values.strategy.maxUnavailable }}
   template:
     metadata:
       labels:
@@ -25,11 +27,33 @@ spec:
         image: {{ .Values.image.repository }}:{{ .Values.image.tag }}
         imagePullPolicy: {{ .Values.image.pullPolicy }}
         ports:
-          - name: http-phpfpm
-            containerPort: {{ .Values.config.phpService.targetPort }}
-            protocol: TCP
+          - name: {{ .Values.service.name }}
+            containerPort: {{ .Values.service.targetPort }}
+            protocol: {{ .Values.service.protocol }}
         envFrom:
           - secretRef:
               name: {{ include "common.fullname" . }}-env
           - configMapRef:
               name: {{ include "common.fullname" . }}-configmap
+      - name: {{ .Values.exporter.name | lower }}
+        image: {{ .Values.exporter.image.repository }}
+        imagePullPolicy: {{ .Values.exporter.image.pullPolicy }}
+        ports:
+          - containerPort: {{ .Values.exporter.ports.containerPort}}
+            name: {{ .Values.exporter.ports.name}}
+        env:
+          - name: PHP_FPM_SCRAPE_URI
+            value: tcp://127.0.0.1:9000/status
+          - name: PHP_FPM_WEB_LISTEN_ADDRESS
+            value: :9253
+          - name: PHP_FPM_WEB_TELEMETRY_PATH
+            value: /metrics
+          - name: PHP_FPM_FIX_PROCESS_COUNT
+            value: "true"
+        resources:
+          requests:
+            cpu: 30m
+            memory: 32Mi
+          limits:
+            cpu: 30m
+            memory: 32Mi
