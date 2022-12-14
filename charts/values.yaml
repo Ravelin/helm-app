@@ -2,7 +2,7 @@ project: cti # Project Name
 name:  # This is the name of the chart, not the name of the project.
 environment: production # ENV type
 
-image: 
+image:
   repository:   # The Image to use for the container
   pullPolicy: IfNotPresent # The pull policy for the image (Always, IfNotPresent, Never)
   tag:  # Overrides the image tag whose default is the chart appVersion.
@@ -41,7 +41,7 @@ aws: # AWS specific values
   region: eu-west-2 # AWS region
 
 secrets: # Secrets to be used in the deployment
-  name:  # Name of the secret
+  key:  # Name of the secret
   decodingStrategy: Auto # Auto, Base64, Hex, None
 
 externalSecrets: # External Secrets to be used in the deployment
